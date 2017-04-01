@@ -21,6 +21,7 @@ local byte = string.byte
 local null
 local sub = string.sub
 local ngx = ngx
+local vars = vars
 local jit = jit
 local var
 
@@ -100,7 +101,13 @@ local function readfile(path)
 end
 
 local function loadlua(path)
-    return readfile(path) or path
+    if vars ~= nil then
+        local root = vars.template_root
+        if sub(root, -1) == "/" then root = sub(root, 1, -2) end
+        return readfile(concat{ root, "/", path }) or path
+    else
+        return readfile(path) or path
+    end
 end
 
 local function loadngx(path)
